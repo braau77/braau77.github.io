@@ -20,7 +20,7 @@ function preload() {
 
     game.load.image('sky', 'assets/sky.png');
     game.load.image('ground', 'assets/platform.png');
-    game.load.image('star', 'assets/star.png');
+    game.load.image('star', 'assets/knuckles.png');
     game.load.spritesheet('dude', 'assets/sans.png', 170, 300);
 
 }
@@ -96,7 +96,8 @@ function create() {
         //  This just gives each star a slightly random bounce value
         star.body.bounce.y = 0.0 + Math.random() * 0.0;
     }
-
+	star.scale.x = 0.1;
+	star.scale.y = 0.1;
     //  The score
     scoreText = game.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
 

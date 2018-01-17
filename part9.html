@@ -89,6 +89,8 @@ function create() {
     {
         //  Create a star inside of the 'stars' group
         var star = stars.create(i * 70, 0, 'star');
+	    star.scale.x = 0.1;
+	    star.scale.y = 0.1;
 
         //  Let gravity do its thing
         star.body.gravity.y = 300;

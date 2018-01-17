@@ -20,9 +20,12 @@ function preload() {
 
     game.load.image('sky', 'assets/sky.png');
     game.load.image('ground', 'assets/platform.png');
-    game.load.image('star', 'assets/coins.png', 84, 96);
-    game.load.spritesheet('dude', 'assets/sans.png', 170, 300);
-
+    game.load.image('star', 'assets/knuckles.png');
+    game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+    game.load.audio('background_music', 'assets/name');
+    backgroundMusic = game.add.audio('background_music');
+    background.loop = true;
+    backgroundMusic.play();
 }
 
 var player;
@@ -34,7 +37,7 @@ var score = 0;
 var scoreText;
 
 function create() {
-
+    myimage.width = 40;myimage.height = 25;
     //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -58,10 +61,10 @@ function create() {
 
     //  Now let's create two ledges
     var ledge = platforms.create(400, 400, 'ground');
-    ledge.body.immovable = true;
+    ledge.body.immovable = false;
 
     ledge = platforms.create(-150, 250, 'ground');
-    ledge.body.immovable = true;
+    ledge.body.immovable = false;
 
     // The player and its settings
     player = game.add.sprite(32, game.world.height - 150, 'dude');
@@ -83,22 +86,19 @@ function create() {
 
     //  We will enable physics for any star that is created in this group
     stars.enableBody = true;
-
-    //  Here we'll create 12 of them evenly spaced apart
+    star.scale.x = 0.1;
+    star.scale.y = 0.1;
+    //  true we'll create 12 of them evenly spaced apart
     for (var i = 0; i < 12; i++)
     {
         //  Create a star inside of the 'stars' group
         var star = stars.create(i * 70, 0, 'star');
-	
+
         //  Let gravity do its thing
-        star.body.gravity.y = 300;
+        star.body.gravity.y = 0;
 
         //  This just gives each star a slightly random bounce value
         star.body.bounce.y = 0.0 + Math.random() * 0.0;
-	
-	stars.animations.add('spin');
-    	stars.animations.play('spin', 30, true);
-
     }
 
     //  The score
@@ -107,6 +107,21 @@ function create() {
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys();
     
+    game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
+
+    game.input.onDown.add(gofull, this);
+   
+}
+
+function gofull(){
+    if (gme.scale.isFullScreen)
+    {
+        game.scale.stopFullScreen();
+    }
+    else
+    {
+        game.scale.startFullScreen(false);
+    }
 }
 
 function update() {
@@ -124,14 +139,14 @@ function update() {
     if (cursors.left.isDown)
     {
         //  Move to the left
-        player.body.velocity.x = -350;
+        player.body.velocity.x = -150;
 
         player.animations.play('left');
     }
     else if (cursors.right.isDown)
     {
         //  Move to the right
-        player.body.velocity.x = 350;
+        player.body.velocity.x = 150;
 
         player.animations.play('right');
     }
@@ -157,7 +172,7 @@ function collectStar (player, star) {
     star.kill();
 
     //  Add and update the score
-    score += 9999;
+    score += 10;
     scoreText.text = 'Score: ' + score;
 
 }

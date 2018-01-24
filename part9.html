@@ -103,7 +103,7 @@ function create() {
 
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys();
-
+	jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 }
 
 function update() {
@@ -138,6 +138,10 @@ function update() {
 
         player.frame = 2;
     }
+   if (jumpButton.isDown && player.body.touching.down)
+   {
+   	player.body.velocity.y = -350;
+   }
 }
 
 function collectStar (player, star) {

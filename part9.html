@@ -22,7 +22,8 @@ function preload() {
     game.load.image('ground', 'assets/platform.png');
     game.load.image('star', 'assets/knuckles.png');
     game.load.spritesheet('dude', 'assets/chicken.png', 48, 48);
-
+	var timer = 0;
+	var loadingJump = false;
 }
 
 var player;
@@ -104,8 +105,7 @@ function create() {
 
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys();
-    
-	jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.Z);
+    jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.Z);
 }
 
 function update() {
@@ -147,7 +147,16 @@ function update() {
     {
         player.body.velocity.y = -350;
     }
-
+	if (cursors.up.isDown && player.body.touching.down) 
+	{   loadingJump = true;        
+	timer += game.time.elapsed;} 
+	else if (loadingJump == true) {
+	if (timer < 300) {player.body.velocity.y = -150;}            
+	else if (timer < 600) {player.body.velocity.y = -250;}            
+	else if (timer > 600) {player.body.velocity.y = -350;}
+	loadingJump = false;
+	timer = 0;
+	}
 }
 
 function collectStar (player, star) {

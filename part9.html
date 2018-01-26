@@ -104,15 +104,15 @@ function create() {
 
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys();
-	jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.UPARROW);
+	jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 }
 
 function update() {
-	if (cursors.up.isDown && player.body.touching.down)
+	if (cursors.SPACEBAR.isDown && player.body.touching.down)
             {   //player is on the ground, so he is allowed to start a jump
                 jumptimer = 1;
                 player.body.velocity.y = -250;
-            } else if (cursors.up.isDown && (jumptimer != 0))
+            } else if (cursors.SPACEBAR.isDown && (jumptimer != 0))
             { //player is no longer on the ground, but is still holding the jump key
                 if (jumptimer > 30) { // player has been holding jump for over 30 frames, it's time to stop him
                     jumptimer = 0;

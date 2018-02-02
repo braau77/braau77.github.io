@@ -20,8 +20,10 @@ Jumper.Play = function() {};
 Jumper.Play.prototype = {
 
   preload: function() {
-    this.load.image( 'hero', 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/836/dude.png' );
-    this.load.image( 'pixel', 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/836/pixel_1.png' );
+    game.load.image('sky', 'assets/sky.png');
+    game.load.image('ground', 'assets/platform.png');
+    game.load.image('star', 'assets/knuckles.png');
+    game.load.spritesheet('dude', 'assets/chicken.png', 48, 48);
   },
 
   create: function() {

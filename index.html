@@ -13,157 +13,113 @@
 <body>
 
 <script type="text/javascript">
-
-var Jumper = function() {};
-Jumper.Play = function() {};
-
-Jumper.Play.prototype = {
-
-  preload: function() {
-    this.load.image( 'hero', 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/836/dude.png' );
-    this.load.image( 'pixel', 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/836/pixel_1.png' );
-  },
-
-  create: function() {
-    // background color
-    this.stage.backgroundColor = '#6bf';
-
-    // scaling
-    this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-    this.scale.maxWidth = this.game.width;
-    this.scale.maxHeight = this.game.height;
-    this.scale.pageAlignHorizontally = true;
-    this.scale.pageAlignVertically = true;
-    this.scale.setScreenSize( true );
-
-    // physics
-    this.physics.startSystem( Phaser.Physics.ARCADE );
-
-    // camera and platform tracking vars
-    this.cameraYMin = 99999;
-    this.platformYMin = 99999;
-
-    // create platforms
-    this.platformsCreate();
-
-    // create hero
-    this.heroCreate();
-
-    // cursor controls
-    this.cursor = this.input.keyboard.createCursorKeys();
-  },
-
-  update: function() {
-    // this is where the main magic happens
-    // the y offset and the height of the world are adjusted
-    // to match the highest point the hero has reached
-    this.world.setBounds( 0, -this.hero.yChange, this.world.width, this.game.height + this.hero.yChange );
-
-    // the built in camera follow methods won't work for our needs
-    // this is a custom follow style that will not ever move down, it only moves up
-    this.cameraYMin = Math.min( this.cameraYMin, this.hero.y - this.game.height + 130 );
-    this.camera.y = this.cameraYMin;
-
-    // hero collisions and movement
-    this.physics.arcade.collide( this.hero, this.platforms );
-    this.heroMove();
-
-    // for each plat form, find out which is the highest
-    // if one goes below the camera view, then create a new one at a distance from the highest one
-    // these are pooled so they are very performant
-    this.platforms.forEachAlive( function( elem ) {
-      this.platformYMin = Math.min( this.platformYMin, elem.y );
-      if( elem.y > this.camera.y + this.game.height ) {
-        elem.kill();
-        this.platformsCreateOne( this.rnd.integerInRange( 0, this.world.width - 50 ), this.platformYMin - 100, 50 );
-      }
-    }, this );
-  },
-
-  shutdown: function() {
-    // reset everything, or the world will be messed up
-    this.world.setBounds( 0, 0, this.game.width, this.game.height );
-    this.cursor = null;
-    this.hero.destroy();
-    this.hero = null;
-    this.platforms.destroy();
-    this.platforms = null;
-  },
-
-  platformsCreate: function() {
-    // platform basic setup
-    this.platforms = this.add.group();
-    this.platforms.enableBody = true;
-    this.platforms.createMultiple( 10, 'pixel' );
-
-    // create the base platform, with buffer on either side so that the hero doesn't fall through
-    this.platformsCreateOne( -16, this.world.height - 16, this.world.width + 16 );
-    // create a batch of platforms that start to move up the level
-    for( var i = 0; i < 9; i++ ) {
-      this.platformsCreateOne( this.rnd.integerInRange( 0, this.world.width - 50 ), this.world.height - 100 - 100 * i, 50 );
-    }
-  },
-
-  platformsCreateOne: function( x, y, width ) {
-    // this is a helper function since writing all of this out can get verbose elsewhere
-    var platform = this.platforms.getFirstDead();
-    platform.reset( x, y );
-    platform.scale.x = width;
-    platform.scale.y = 16;
-    platform.body.immovable = true;
-    return platform;
-  },
-
-  heroCreate: function() {
-    // basic hero setup
-    this.hero = game.add.sprite( this.world.centerX, this.world.height - 36, 'hero' );
-    this.hero.anchor.set( 0.5 );
-    
-    // track where the hero started and how much the distance has changed from that point
-    this.hero.yOrig = this.hero.y;
-    this.hero.yChange = 0;
-
-    // hero collision setup
-    // disable all collisions except for down
-    this.physics.arcade.enable( this.hero );
-    this.hero.body.gravity.y = 500;
-    this.hero.body.checkCollision.up = false;
-    this.hero.body.checkCollision.left = false;
-    this.hero.body.checkCollision.right = false;
-  },
-
-  heroMove: function() {
-    // handle the left and right movement of the hero
-    if( this.cursor.left.isDown ) {
-      this.hero.body.velocity.x = -200;
-    } else if( this.cursor.right.isDown ) {
-      this.hero.body.velocity.x = 200;
-    } else {
-      this.hero.body.velocity.x = 0;
-    }
-
-    // handle hero jumping
-    if( this.cursor.up.isDown && this.hero.body.touching.down ) {
-      this.hero.body.velocity.y = -350;
-    } 
-    
-    // wrap world coordinated so that you can warp from left to right and right to left
-    this.world.wrap( this.hero, this.hero.width / 2, false );
-
-    // track the maximum amount that the hero has travelled
-    this.hero.yChange = Math.max( this.hero.yChange, Math.abs( this.hero.y - this.hero.yOrig ) );
-    
-    // if the hero falls below the camera view, gameover
-    if( this.hero.y > this.cameraYMin + this.game.height && this.hero.alive ) {
-      this.state.start( 'Play' );
-    }
-  }
+var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+function preload() {
+    game.load.image('sky', 'assets/sky.png');
+    game.load.image('ground', 'assets/platform.png');
+    game.load.image('star', 'assets/knuckles.png');
+    game.load.spritesheet('dude', 'assets/chicken.png', 48, 48);
 }
-
-var game = new Phaser.Game( 300, 500, Phaser.CANVAS, '' );
-game.state.add( 'Play', Jumper.Play );
-game.state.start( 'Play' );
-
+var player;
+var platforms;
+var cursors;
+var stars;
+var score = 0;
+var scoreText;
+	
+function create() {
+    //  We're going to be using physics, so enable the Arcade Physics system
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+    //  A simple background for our game
+    game.add.sprite(0, 0, 'sky');
+    //  The platforms group contains the ground and the 2 ledges we can jump on
+    platforms = game.add.group();
+    //  We will enable physics for any object that is created in this group
+    platforms.enableBody = true;
+    // Here we create the ground.
+    var ground = platforms.create(0, game.world.height - 64, 'ground');
+    //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
+    ground.scale.setTo(2, 2);
+    //  This stops it from falling away when you jump on it
+    ground.body.immovable = true;
+    //  Now let's create two ledges
+    var ledge = platforms.create(400, 400, 'ground');
+    ledge.body.immovable = true;
+    ledge = platforms.create(-150, 250, 'ground');
+    ledge.body.immovable = true;
+    // The player and its settings
+    player = game.add.sprite(32, game.world.height - 250, 'dude');
+    //  We need to enable physics on the player
+    game.physics.arcade.enable(player);
+    //  Player physics properties. Give the little guy a slight bounce.
+    player.body.bounce.y = 0.2;
+    player.body.gravity.y = 300;
+    player.body.collideWorldBounds = true;
+    //  Our two animations, walking left and right.
+    player.animations.add('left', [12, 13, 14], 2, true);
+    player.animations.add('right', [24, 25, 26], 2, true);
+    //  Finally some stars to collect
+    stars = game.add.group();
+    //  We will enable physics for any star that is created in this group
+    stars.enableBody = true;
+	
+    //  Here we'll create 12 of them evenly spaced apart
+    for (var i = 0; i < 12; i++)
+    {
+        //  Create a star inside of the 'stars' group
+        var star = stars.create(i * 70, 0, 'star');
+	    star.scale.x = 0.08;
+	    star.scale.y = 0.08;
+        //  Let gravity do its thing
+        star.body.gravity.y = 300;
+        //  This just gives each star a slightly random bounce value
+        star.body.bounce.y = 0.7 + Math.random() * 0.2;
+    }
+    //  The score
+    scoreText = game.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+    //  Our controls.
+    cursors = game.input.keyboard.createCursorKeys();
+	jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+}
+function update() {
+    //  Collide the player and the stars with the platforms
+    game.physics.arcade.collide(player, platforms);
+    game.physics.arcade.collide(stars, platforms);
+    //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
+    game.physics.arcade.overlap(player, stars, collectStar, null, this);
+    //  Reset the players velocity (movement)
+    player.body.velocity.x = 0;
+    if (cursors.left.isDown)
+    {
+        //  Move to the left
+        player.body.velocity.x = -150;
+        player.animations.play('left');
+    }
+    else if (cursors.right.isDown)
+    {
+        //  Move to the right
+        player.body.velocity.x = 150;
+        player.animations.play('right');
+    }
+    else
+    {
+        //  Stand still
+        player.animations.stop();
+        player.frame = 2;
+    }
+   if (jumpButton.isDown && player.body.touching.down)
+   {
+   	player.body.velocity.y = -350;
+   }
+}
+function collectStar (player, star) {
+    
+    // Removes the star from the screen
+    star.kill();
+    //  Add and update the score
+    score += 10;
+    scoreText.text = 'Score: ' + score;
+}
 </script>
 
 </body>

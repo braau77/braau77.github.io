@@ -19,9 +19,9 @@ Jumper.Play = function() {};
 Jumper.Play.prototype = {
 
   preload: function() {
-    this.load.image( 'hero', 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/836/dude.png' );
-    this.load.image( 'pixel', 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/836/pixel_1.png' );
-  }
+    this.load.image( 'hero', 'assets/dude.png', 32, 48);
+    this.load.image( 'pixel', 'assets/platform.png' );
+  },
 
   create: function() {
     // background color
@@ -50,7 +50,7 @@ Jumper.Play.prototype = {
 
     // cursor controls
     this.cursor = this.input.keyboard.createCursorKeys();
-  }
+  },
 
   update: function() {
     // this is where the main magic happens
@@ -77,7 +77,7 @@ Jumper.Play.prototype = {
         this.platformsCreateOne( this.rnd.integerInRange( 0, this.world.width - 50 ), this.platformYMin - 100, 50 );
       }
     }, this );
-  }
+  },
 
   shutdown: function() {
     // reset everything, or the world will be messed up
@@ -87,7 +87,7 @@ Jumper.Play.prototype = {
     this.hero = null;
     this.platforms.destroy();
     this.platforms = null;
-  }
+  },
 
   platformsCreate: function() {
     // platform basic setup
@@ -101,7 +101,7 @@ Jumper.Play.prototype = {
     for( var i = 0; i < 9; i++ ) {
       this.platformsCreateOne( this.rnd.integerInRange( 0, this.world.width - 50 ), this.world.height - 100 - 100 * i, 50 );
     }
-  }
+  },
 
   platformsCreateOne: function( x, y, width ) {
     // this is a helper function since writing all of this out can get verbose elsewhere
@@ -111,7 +111,7 @@ Jumper.Play.prototype = {
     platform.scale.y = 16;
     platform.body.immovable = true;
     return platform;
-  }
+  },
 
   heroCreate: function() {
     // basic hero setup
@@ -129,7 +129,7 @@ Jumper.Play.prototype = {
     this.hero.body.checkCollision.up = false;
     this.hero.body.checkCollision.left = false;
     this.hero.body.checkCollision.right = false;
-  }
+  },
 
   heroMove: function() {
     // handle the left and right movement of the hero

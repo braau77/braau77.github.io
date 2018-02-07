@@ -83,6 +83,7 @@ function create() {
 	jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 }
 function update() {
+	this.sky.tilePosition.y = -(this.camera.y * 0.7);
     //  Collide the player and the stars with the platforms
     game.physics.arcade.collide(player, platforms);
     game.physics.arcade.collide(stars, platforms);

@@ -77,7 +77,12 @@ function create() {
     }
     //  The score
     scoreText = game.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+	scoreText.fixedToCamera = true;
+	scoreText.cameraOffset.setTo(0,0);
     //  Our controls.
+	cursors = game.input.keyboard.createCursorKeys();
+	game.camera.follow(player, Phaser.Camera.FOLLOW_PLATFORMER);
+	style = 'STYLE_PLATFORMER';
     cursors = game.input.keyboard.createCursorKeys();
 	jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 }

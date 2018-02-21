@@ -84,6 +84,7 @@ function create() {
 	cursors = game.input.keyboard.createCursorKeys();
 	game.camera.follow(player, Phaser.Camera.FOLLOW_PLATFORMER);
 	style = 'STYLE_PLATFORMER';
+	
     cursors = game.input.keyboard.createCursorKeys();
 	jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 }
@@ -115,7 +116,7 @@ function update() {
     }
    if (jumpButton.isDown && player.body.touching.down)
    {
-   	player.body.velocity.y = -950;
+   	player.body.velocity.y = -450;
    }
 }
 function collectStar (player, star) {
